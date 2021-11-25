@@ -7,15 +7,12 @@ public class Board : MonoBehaviour
     [SerializeField] private GridLayoutGroup _grid;
 
     private BoardCell[] _boardCells;
-    private Prize _prizePrefab;
     private Vector2 _cellSize;
-    private RectTransform _basket;
 
-    public void Init(Action<int> onCellClick, Vector2Int gridSize, BoardCell cellPrefab, Prize prizePrefab,
-        RectTransform basket)
+    public Vector2 CellSize => _cellSize;
+
+    public void Init(Action<int> onCellClick, Vector2Int gridSize, BoardCell cellPrefab) 
     {
-        _prizePrefab = prizePrefab;
-        _basket = basket;
         var gridT = _grid.transform as RectTransform;
 
         _cellSize.x = gridT.rect.width / gridSize.x;
@@ -46,13 +43,8 @@ public class Board : MonoBehaviour
     public void UpdateCell(int id, Cell cell)
     {
         _boardCells[id].UpdateCell(cell.Depth);
-
-        if (cell.HasPrize)
-        {
-            var prize = Instantiate(_prizePrefab, transform);
-            var prizeT = prize.transform as RectTransform;
-            prizeT.sizeDelta = _cellSize;
-            prize.Init(id,(_boardCells[id].transform as RectTransform).position, _basket);
-        }
     }
+
+    public Vector3 CellPosition(int id) => 
+        _boardCells[id].transform.position;
 }
