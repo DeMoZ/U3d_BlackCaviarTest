@@ -4,8 +4,8 @@ public class Bootstrap : MonoBehaviour
 {
     [SerializeField] private Game _gamePrefab;
 
-    private bool _settingsLoaded;
-    private bool _dataLoaded;
+    private bool _settingsLoadFinished;
+    private bool _dataLoadFinished;
 
     private GameSettings _settings;
     private GameData _gameData;
@@ -35,21 +35,28 @@ public class Bootstrap : MonoBehaviour
     {
         var loader = new LoadFromStreamingAssets();
         loader.Load(this, Constants.GameSettingsFileName,
-            (data) => OnLoad<GameSettings>(ref _settings, ref _settingsLoaded, data),
-            () => { });
+            data => OnLoad<GameSettings>(ref _settings, ref _settingsLoadFinished, data),
+            () =>
+            {
+                Debug.LogError("Settings was not loaded");
+            });
     }
 
     private void LoadGameData()
     {
         var loader = new LoadFromPlayerPrefs();
         loader.Load(this, Constants.GameDataFileName,
-            (data) => OnLoad<GameData>(ref _gameData, ref _dataLoaded, data),
-            () => { });
+            data => OnLoad<GameData>(ref _gameData, ref _dataLoadFinished, data),
+            ()=>
+            {
+                _dataLoadFinished = true;
+                TryLoadSavedGame();
+            });
     }
 
     private void TryLoadSavedGame()
     {
-        if (!_settingsLoaded || !_dataLoaded)
+        if (!_settingsLoadFinished || !_dataLoadFinished)
             return;
 
         if (_settings == null || _settings == new GameSettings())
@@ -76,10 +83,27 @@ public class Bootstrap : MonoBehaviour
         _gameData = new GameData
         {
             LeftScoops = _settings.MaxScoops,
-            GameSettings = _settings
+            GameSettings = _settings,
+            Cells = CreateCells()
         };
 
         StartGame();
+    }
+
+    private Cell[] CreateCells()
+    {
+        var totalCells = _settings.GreedX * _settings.GreedY;
+        var cells = new Cell[totalCells];
+        for (var i = 0; i < totalCells; i++)
+        {
+            cells[i] = new Cell()
+            {
+                Depth = _settings.GreedDepth,
+                HasPrize = false
+            };
+        }
+
+        return cells;
     }
 
     private void LoadSavedGame() => 

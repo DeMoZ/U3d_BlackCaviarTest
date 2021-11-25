@@ -25,4 +25,5 @@ public class GameData
 public class Cell
 {
     public int Depth;
+    public bool HasPrize;
 }

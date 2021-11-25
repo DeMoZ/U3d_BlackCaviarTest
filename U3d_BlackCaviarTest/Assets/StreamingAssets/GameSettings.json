@@ -3,6 +3,6 @@
 "MaxPrizes": 5,
 "MaxScoops": 30,
 "GreedX": 7,
-"GreedY": 5,
+"GreedY": 6,
 "GreedDepth": 5
 }
