@@ -1,58 +1,27 @@
+using System;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class BoardCell : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+public class BoardCell : MonoBehaviour
 {
     [SerializeField] private Button _button = default;
-    
-    private Cell _cell;
-    public bool HasPrise { get; set; }
-
-    /*public void OnClick(Action onClick)
+    private event Action _onButtonClick;
+    private void Start()
     {
-        _button.onClick.AddListener(()=> { onClick?.Invoke();});
-    }*/
-    public void Init(Cell cell)
-    {
-        _cell = cell;
-        
-        _button.onClick.RemoveAllListeners();
-        _button.onClick.AddListener(()=>OnClick());
-        
-        DecorateCell();
+        _button.onClick.AddListener(OnButtonClick);
     }
 
-    
     private void OnDestroy() => 
         _button.onClick.RemoveAllListeners();
 
-    public void OnPointerDown(PointerEventData eventData)
+    public void OnClick(Action onButtonClick) => 
+        _onButtonClick += onButtonClick;
+
+    public void UpdateCell(int depth)
     {
-        Debug.Log($"pointerDown");
+        GetComponentInChildren<Text>().text = depth.ToString();
     }
 
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        Debug.Log($"pointerUp");
-    }
-
-    private void OnClick()
-    {
-        if (_cell.Depth > 0)
-            UpdateCell();
-
-    }
-
-    private void UpdateCell()
-    {
-        _cell.Depth--;
-        DecorateCell();
-    }
-    private void DecorateCell()
-    {
-        GetComponentInChildren<Text>().text = _cell.Depth.ToString();
-    }
-
-
+    private void OnButtonClick() => 
+        _onButtonClick?.Invoke();
 }

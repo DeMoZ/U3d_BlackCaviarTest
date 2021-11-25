@@ -1,39 +1,58 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Board : MonoBehaviour
 {
     [SerializeField] private GridLayoutGroup _grid;
-    public void Init(GameData gameData, BoardCell cellPrefab)
-    {
-        var gridT = _grid.transform as RectTransform;
-        var totalCells = gameData.GameSettings.GreedX * gameData.GameSettings.GreedY;
-        Vector2 cellSize ;
-        cellSize.x = gridT.rect.width / gameData.GameSettings.GreedX;
-        cellSize.y = gridT.rect.height / gameData.GameSettings.GreedY;
-        _grid.constraintCount = gameData.GameSettings.GreedX;
-        _grid.cellSize = cellSize;
 
-        for (int i = 0; i < totalCells; i++)
+    private BoardCell[] _boardCells;
+    private Prize _prizePrefab;
+    private Vector2 _cellSize;
+    private RectTransform _basket;
+
+    public void Init(Action<int> onCellClick, Vector2Int gridSize, BoardCell cellPrefab, Prize prizePrefab,
+        RectTransform basket)
+    {
+        _prizePrefab = prizePrefab;
+        _basket = basket;
+        var gridT = _grid.transform as RectTransform;
+
+        _cellSize.x = gridT.rect.width / gridSize.x;
+        _cellSize.y = gridT.rect.height / gridSize.y;
+
+        _grid.constraintCount = gridSize.x;
+        _grid.cellSize = _cellSize;
+
+        var totalCells = gridSize.x * gridSize.y;
+        _boardCells = new BoardCell[totalCells];
+
+        for (var i = 0; i < totalCells; i++)
         {
-            var cell = Instantiate(cellPrefab,_grid.transform);
-            cell.Init(gameData.Cells[i]);
-            //cell.OnClick(() => UpdateCell(cell));
+            var id = i;
+            _boardCells[i] = Instantiate(cellPrefab, _grid.transform);
+            _boardCells[i].OnClick(() => { onCellClick?.Invoke(id); });
         }
     }
 
-    private void UpdateCell(BoardCell cell)
+    public void CreateCells(Cell[] cells)
     {
-        
-        if (cell.HasPrise)
+        for (var i = 0; i < _boardCells.Length; i++)
         {
-            // collect prize
-            
-            // Also need to support drug
+            _boardCells[i].UpdateCell(cells[i].Depth);
         }
-        else
+    }
+
+    public void UpdateCell(int id, Cell cell)
+    {
+        _boardCells[id].UpdateCell(cell.Depth);
+
+        if (cell.HasPrize)
         {
-            
+            var prize = Instantiate(_prizePrefab, transform);
+            var prizeT = prize.transform as RectTransform;
+            prizeT.sizeDelta = _cellSize;
+            prize.Init(id,(_boardCells[id].transform as RectTransform).position, _basket);
         }
     }
 }

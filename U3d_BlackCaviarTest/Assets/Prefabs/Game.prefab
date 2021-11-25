@@ -46,3 +46,4 @@ MonoBehaviour:
   _boardPrefab: {fileID: 7754204847988588458, guid: b157c4dea97cf7c48a385d072b5bd9ab, type: 3}
   _hudPrefab: {fileID: -7469058637241411127, guid: 50ce144099b460445bfe81fd1c15aae3, type: 3}
   _cellPrefab: {fileID: 6997918578381949877, guid: 6db128bd670909447a816eab654e6428, type: 3}
+  _prizePrefab: {fileID: 2863306834627785880, guid: 476bdf0bd07416e4c88cadb72bdcc237, type: 3}
