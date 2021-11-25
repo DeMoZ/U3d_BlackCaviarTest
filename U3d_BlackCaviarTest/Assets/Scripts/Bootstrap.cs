@@ -35,8 +35,7 @@ public class Bootstrap : MonoBehaviour
     {
         var loader = new LoadFromStreamingAssets();
         loader.Load(this, Constants.GameSettingsFileName,
-            //(data) => OnLoad<GameSettings>(ref _settings, ref _settingsLoaded, data),
-            OnLoadSettings,
+            (data) => OnLoad<GameSettings>(ref _settings, ref _settingsLoaded, data),
             () => { });
     }
 
@@ -53,14 +52,12 @@ public class Bootstrap : MonoBehaviour
         if (!_settingsLoaded || !_dataLoaded)
             return;
 
-        if (_settings == null)
+        if (_settings == null || _settings == new GameSettings())
         {
             Debug.LogError("No Game Rules Loaded");
             return;
         }
         
-        Debug.Log(_settings);
-
         if (_gameData == null || _gameData.GameSettings != _settings)
         {
             Debug.Log($"Previously saved gameData not found or is not related to new rules.\nWill start new game");
@@ -78,16 +75,15 @@ public class Bootstrap : MonoBehaviour
     {
         _gameData = new GameData
         {
+            LeftScoops = _settings.MaxScoops,
             GameSettings = _settings
         };
 
         StartGame();
     }
 
-    private void LoadSavedGame()
-    {
+    private void LoadSavedGame() => 
         StartGame();
-    }
 
     private void StartGame()
     {
@@ -96,42 +92,19 @@ public class Bootstrap : MonoBehaviour
         _game.Start();
     }
 
-
     private void OnLoad<T>(ref T model, ref bool isLoadedField, string data)
     {
         try
         {
             model = JsonUtility.FromJson<T>(data);
+            isLoadedField = true;
         }
         catch
         {
             model = default;
         }
-        finally
-        {
-            isLoadedField = true;
-            TryLoadSavedGame();
-        }
 
-        
-    }
-private void OnLoadSettings( string data)
-    {
-        try
-        {
-            _settings = JsonUtility.FromJson<GameSettings>(data);
-        }
-        catch
-        {
-            _settings = default;
-        }
-        finally
-        {
-            _settingsLoaded = true;
-            TryLoadSavedGame();
-        }
-
-        
+        TryLoadSavedGame();
     }
 
     private void OnApplicationQuit() =>

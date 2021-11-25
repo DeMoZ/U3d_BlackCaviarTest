@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class Game : MonoBehaviour
 {
-    //private GameData _gameData;
-
     [SerializeField] private Board _boardPrefab;
     [SerializeField] private Hud _hudPrefab;
     [SerializeField] private BoardCell _cellPrefab;
@@ -13,12 +11,9 @@ public class Game : MonoBehaviour
 
     public void Init(GameData gameData)
     {
-        //_gameData = gameData;
-
         _board = Instantiate(_boardPrefab);
         _board.Init(gameData, _cellPrefab);
-        
-        
+
         _hud = Instantiate(_hudPrefab);
     }
 

@@ -1,10 +1,8 @@
 {
-  "GameSettings": {
-    "AppearPercent": 80,
-    "MaxPrizes": 5,
-    "MaxScoops": 30,
-    "GreedX": 7,
-    "GreedY": 5,
-    "GreedDepth": 5
-  }
+"AppearPercent": 80,
+"MaxPrizes": 5,
+"MaxScoops": 30,
+"GreedX": 7,
+"GreedY": 5,
+"GreedDepth": 5
 }
