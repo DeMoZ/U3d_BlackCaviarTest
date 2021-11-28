@@ -5,7 +5,7 @@ public class Pool
 {
     public Dictionary<string, Queue<GameObject>> _pools = new Dictionary<string, Queue<GameObject>>();
 
-    public GameObject Get(GameObject prefab, Vector3 position, Transform parent)
+    public GameObject Get(GameObject prefab, Transform parent)
     {
         GameObject go;
         if (!_pools.ContainsKey(prefab.name))
@@ -14,12 +14,10 @@ public class Pool
         if (_pools[prefab.name].Count > 0)
         {
             go = _pools[prefab.name].Dequeue();
-            go.transform.SetParent( parent);
-            go.transform.position = position;
         }
         else
         {
-            go = GameObject.Instantiate(prefab, position,Quaternion.identity,parent);
+            go = GameObject.Instantiate(prefab, parent);
             go.name = prefab.name;
         }
 

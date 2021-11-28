@@ -24,7 +24,7 @@ public class LoadFromAddress : ILoader
         {
             yield return www.SendWebRequest();
 
-            if (www.isNetworkError || www.isHttpError)
+            if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
                 fail?.Invoke();
             else
                 onComplete?.Invoke(www.downloadHandler.text);

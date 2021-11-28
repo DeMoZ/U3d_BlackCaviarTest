@@ -5,6 +5,8 @@ using UnityEngine.EventSystems;
 
 public class Prize : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
 {
+    [SerializeField] private Canvas _canvas = default;
+    [SerializeField] private RectTransform _prize = default;
     private Vector3 _startPosition;
     private Vector3 _offset;
     private Coroutine _moveRoutine;
@@ -12,23 +14,26 @@ public class Prize : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDra
     private Action _onBasket;
     public int Id { get; private set; }
 
-    public void Init(int id, RectTransform basket, Action onBasket)
+    public void Init(int id, RectTransform basket, Action onBasket, Vector3 position, Vector2 size)
     {
-        _startPosition = transform.position;
-
+        _startPosition = position;
+        _prize.position = position;
+        _prize.sizeDelta = size;
         Id = id;
         _basket = basket;
         _onBasket += onBasket;
     }
 
-    public void OnDestroy()
-    {
+    private void Start() =>
+        _canvas.sortingOrder = Constants.PrizeDefaultSorting;
+
+    public void OnReturn() =>
         _onBasket = null;
-    }
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        _offset = eventData.position - (Vector2)transform.position;
+        _canvas.sortingOrder = Constants.PrizeSelectedSorting;
+        _offset = eventData.position - (Vector2)_prize.position;
     }
 
     public void OnPointerUp(PointerEventData eventData)
@@ -36,10 +41,8 @@ public class Prize : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDra
         if (_moveRoutine != null)
             StopCoroutine(_moveRoutine);
 
-        var prize = (transform as RectTransform);
-        
-        if (GetWorldSpaceRect(prize).Overlaps(GetWorldSpaceRect(_basket)))
-            _moveRoutine = StartCoroutine(MoveTo(GetWorldSpaceRect(_basket).center, true));
+        if (_prize.WorldSpaceRect().Overlaps(_basket.WorldSpaceRect()))
+            _moveRoutine = StartCoroutine(MoveTo(_basket.WorldSpaceRect().center, true));
         else
             _moveRoutine = StartCoroutine(MoveTo(_startPosition));
     }
@@ -52,22 +55,16 @@ public class Prize : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDra
         {
             yield return null;
             time += Time.deltaTime;
-            var newPos = Vector2.Lerp(transform.position, position, time);
-            transform.position = newPos;
+            var newPos = Vector2.Lerp(_prize.position, position, time);
+            _prize.position = newPos;
         }
+
+        _canvas.sortingOrder = Constants.PrizeDefaultSorting;
 
         if (invoke)
             _onBasket?.Invoke();
     }
 
     public void OnDrag(PointerEventData eventData) =>
-        transform.position = eventData.position - (Vector2)_offset;
-    
-    private Rect GetWorldSpaceRect(RectTransform rt)
-    {
-        var r = rt.rect;
-        r.center = rt.TransformPoint(r.center);
-        r.size = rt.TransformVector(r.size);
-        return r;
-    }
+        _prize.position = eventData.position - (Vector2)_offset;
 }

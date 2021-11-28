@@ -10,7 +10,7 @@ public class Bootstrap : MonoBehaviour
     private GameSettings _settings;
     private GameData _gameData;
     private Game _game;
-    
+
     private void Start()
     {
         LoadGameData();
@@ -36,10 +36,7 @@ public class Bootstrap : MonoBehaviour
         var loader = new LoadFromStreamingAssets();
         loader.Load(this, Constants.GameSettingsFileName,
             data => OnLoad<GameSettings>(ref _settings, ref _settingsLoadFinished, data),
-            () =>
-            {
-                Debug.LogError("Settings was not loaded");
-            });
+            () => { Debug.LogError("Settings was not loaded"); });
     }
 
     private void LoadGameData()
@@ -47,7 +44,7 @@ public class Bootstrap : MonoBehaviour
         var loader = new LoadFromPlayerPrefs();
         loader.Load(this, Constants.GameDataFileName,
             data => OnLoad<GameData>(ref _gameData, ref _dataLoadFinished, data),
-            ()=>
+            () =>
             {
                 _dataLoadFinished = true;
                 TryLoadSavedGame();
@@ -64,7 +61,7 @@ public class Bootstrap : MonoBehaviour
             Debug.LogError("No Game Rules Loaded");
             return;
         }
-        
+
         if (_gameData == null || _gameData.GameSettings != _settings)
         {
             Debug.Log($"Previously saved gameData not found or is not related to new rules.\nWill start new game");
@@ -106,13 +103,13 @@ public class Bootstrap : MonoBehaviour
         return cells;
     }
 
-    private void LoadSavedGame() => 
+    private void LoadSavedGame() =>
         StartGame();
 
     private void StartGame()
     {
         _game = Instantiate(_gamePrefab);
-        _game.Init(_gameData);
+        _game.Init(_gameData, Restart);
         _game.Start();
     }
 

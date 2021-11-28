@@ -191,6 +191,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69c00b1b3ae3425583e6f482ca546121, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _button: {fileID: 4238328105424925106}
+  _scoops: {fileID: 4238328104960962030}
+  _prizes: {fileID: 4238328104608820391}
   _basket: {fileID: 4238328104152300313}
 --- !u!1 &4238328104443039697
 GameObject:
