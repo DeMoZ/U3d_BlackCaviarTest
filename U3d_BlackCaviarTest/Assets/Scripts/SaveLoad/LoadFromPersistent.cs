@@ -8,7 +8,9 @@ public class LoadFromPersistent : ILoader
     {
         try
         {
-            var data = File.ReadAllText(Application.persistentDataPath + "/" + filename);
+            var path = Application.persistentDataPath + "/" + Constants.GameDataFileName;
+            Debug.Log(path);
+            var data = File.ReadAllText(path);
             success?.Invoke(data);
         }
         catch

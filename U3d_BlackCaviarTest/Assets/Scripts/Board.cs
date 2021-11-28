@@ -11,7 +11,7 @@ public class Board : MonoBehaviour
 
     public Vector2 CellSize => _cellSize;
 
-    public void Init(Action<int, Vector3> onCellClick, Vector2Int gridSize, BoardCell cellPrefab)
+    public void Init(Action<int> onCellClick, Vector2Int gridSize, BoardCell cellPrefab)
     {
         var gridT = _grid.transform as RectTransform;
 
@@ -28,7 +28,7 @@ public class Board : MonoBehaviour
         {
             var id = i;
             _boardCells[i] = Instantiate(cellPrefab, _grid.transform);
-            _boardCells[i].OnClick(() => { onCellClick?.Invoke(id,  _boardCells[id].transform.position); });
+            _boardCells[i].OnClick(() => { onCellClick?.Invoke(id); });
         }
     }
 
@@ -45,6 +45,6 @@ public class Board : MonoBehaviour
         _boardCells[id].UpdateCell(cell.Depth);
     }
 
-    /*public Vector3 CellPosition(int id) => 
-        _boardCells[id].transform.position;*/
+    public Vector3 CellPosition(int id) => 
+        _boardCells[id].transform.position;
 }

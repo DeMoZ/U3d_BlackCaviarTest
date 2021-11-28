@@ -41,7 +41,8 @@ public class Bootstrap : MonoBehaviour
 
     private void LoadGameData()
     {
-        var loader = new LoadFromPlayerPrefs();
+        //var loader = new LoadFromPlayerPrefs();
+        var loader = new LoadFromPersistent();
         loader.Load(this, Constants.GameDataFileName,
             data => OnLoad<GameData>(ref _gameData, ref _dataLoadFinished, data),
             () =>
@@ -62,7 +63,7 @@ public class Bootstrap : MonoBehaviour
             return;
         }
 
-        if (_gameData == null || _gameData.GameSettings != _settings)
+        if (_gameData == null || !_gameData.GameSettings.EqualsTo( _settings))
         {
             Debug.Log($"Previously saved gameData not found or is not related to new rules.\nWill start new game");
             _gameData = null;
@@ -133,16 +134,11 @@ public class Bootstrap : MonoBehaviour
 
     private void Save()
     {
-    }
-
-    /*private void Save()
-    {
-        var game = new GameData();
-        game.GameSettings = new GameSettings();
-        var gameJson = JsonUtility.ToJson(game);
-        Debug.Log(gameJson);
+        var gameJson = JsonUtility.ToJson(_gameData);
+       Debug.Log(gameJson);
 
         var saver = new SaveToPersistent();
+        //var saver = new SaveToPlayerPrefs();
         saver.Save(gameJson, () => { });
-    }*/
+    }
 }

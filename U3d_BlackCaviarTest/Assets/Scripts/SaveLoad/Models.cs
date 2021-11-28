@@ -1,4 +1,6 @@
-﻿[System.Serializable]
+﻿using UnityEngine;
+
+[System.Serializable]
 public class GameSettings
 {
     public float AppearPercent;
@@ -8,6 +10,13 @@ public class GameSettings
     public int GreedX;
     public int GreedY;
     public int GreedDepth;
+    
+    public bool EqualsTo(GameSettings gameSettings)
+    {
+        var me = JsonUtility.ToJson(this);
+        var other = JsonUtility.ToJson(gameSettings);
+        return me.Equals(other);
+    }
 }
 
 [System.Serializable]

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -35,13 +36,15 @@ public class Game : MonoBehaviour
         _gameOver = Instantiate(_gameOverPrefab);
         _gameOver.Init(onRestart);
         _gameOver.gameObject.SetActive(false);
+
+        StartCoroutine(CreatePrize());
     }
 
     public void Start()
     {
     }
 
-    private void OnCellClick(int cellId, Vector3 position)
+    private void OnCellClick(int cellId)
     {
         if (NoScoopsNoPrizes())
         {
@@ -63,12 +66,28 @@ public class Game : MonoBehaviour
         {
             _gameData.Cells[cellId].HasPrize = true;
 
-            var prizeGo = _pool.Get(_prizePrefab.gameObject, transform);
-            var prize = prizeGo.GetComponent<Prize>();
-            prize.Init(cellId, _hud.Basket, () => OnBasket(prize), position, _board.CellSize);
-            prizeGo.SetActive(true);
+            CreatePrize(cellId);
             _boardPrizes++;
         }
+    }
+
+    private IEnumerator CreatePrize()
+    {
+        yield return null;
+
+        for (var i = 0; i < _gameData.Cells.Length; i++)
+        {
+            if (_gameData.Cells[i].HasPrize)
+                CreatePrize(i);
+        }
+    }
+
+    private void CreatePrize(int cellId)
+    {
+        var prizeGo = _pool.Get(_prizePrefab.gameObject, transform);
+        var prize = prizeGo.GetComponent<Prize>();
+        prize.Init(cellId, _hud.Basket, () => OnBasket(prize), _board.CellPosition(cellId), _board.CellSize);
+        prizeGo.SetActive(true);
     }
 
     private void GameOver()
@@ -77,10 +96,9 @@ public class Game : MonoBehaviour
         _gameOver.gameObject.SetActive(true);
     }
 
-    private bool NoScoopsNoPrizes()
-    {
-        return _gameData.LeftScoops == 0 && _boardPrizes == 0;
-    }
+    private bool NoScoopsNoPrizes() =>
+        _gameData.LeftScoops == 0 && (_gameData.WonPrizes + _boardPrizes) < _gameData.GameSettings.MaxPrizes;
+        //((_gameData.LeftScoops + _gameData.WonPrizes + _boardPrizes) < _gameData.GameSettings.MaxPrizes);
 
     private void OnBasket(Prize prize)
     {

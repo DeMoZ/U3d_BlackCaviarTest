@@ -1,7 +1,7 @@
 {
-"AppearPercent": 80,
+"AppearPercent": 20,
 "MaxPrizes": 5,
-"MaxScoops": 30,
+"MaxScoops": 15,
 "GreedX": 7,
 "GreedY": 6,
 "GreedDepth": 5
