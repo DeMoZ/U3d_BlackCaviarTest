@@ -41,8 +41,8 @@ public class Bootstrap : MonoBehaviour
 
     private void LoadGameData()
     {
-        //var loader = new LoadFromPlayerPrefs();
-        var loader = new LoadFromPersistent();
+        var loader = new LoadFromPlayerPrefs();
+        //var loader = new LoadFromPersistent();
         loader.Load(this, Constants.GameDataFileName,
             data => OnLoad<GameData>(ref _gameData, ref _dataLoadFinished, data),
             () =>
@@ -137,8 +137,8 @@ public class Bootstrap : MonoBehaviour
         var gameJson = JsonUtility.ToJson(_gameData);
        Debug.Log(gameJson);
 
-        var saver = new SaveToPersistent();
-        //var saver = new SaveToPlayerPrefs();
+        //var saver = new SaveToPersistent();
+        var saver = new SaveToPlayerPrefs();
         saver.Save(gameJson, () => { });
     }
 }
